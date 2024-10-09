@@ -18,9 +18,7 @@ import io.kvision.navbar.NavbarType
 import io.kvision.navbar.navbar
 import io.kvision.state.bind
 import io.kvision.utils.rem
-import kotlinx.browser.document
 import kotlinx.browser.window
-import org.w3c.dom.HTMLIFrameElement
 
 fun Container.mainContent(
     viewModel: ManViewModel,
@@ -55,19 +53,20 @@ private fun Container.navBar() = navbar(
             style = ButtonStyle.OUTLINESECONDARY,
         ) {
             onClick {
-                val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
-                (document.createElement("iframe") as HTMLIFrameElement).apply {
-                    src = url
-                    onload = {
-                        window.open("https://github.com/rblaha15/fotbaly-ve-ctvrtek/release/download/latest/fotbaly-ve-ctvrtek.apk")
-                    }
-                    style.display = "none"
-                    document.body?.appendChild(this)
-
-                    window.setTimeout({
-                        document.body?.removeChild(this)
-                    }, 1000)
-                }
+                window.open("https://github.com/rblaha15/fotbaly-ve-ctvrtek/release/download/latest/fotbaly-ve-ctvrtek.apk")
+//                (document.createElement("iframe") as HTMLIFrameElement).apply {
+//                    val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
+//                    src = url
+//                    onload = {
+//                        window.open("https://github.com/rblaha15/fotbaly-ve-ctvrtek/release/download/latest/fotbaly-ve-ctvrtek.apk")
+//                    }
+//                    style.display = "none"
+//                    document.body?.appendChild(this)
+//
+//                    window.setTimeout({
+//                        document.body?.removeChild(this)
+//                    }, 1000)
+//                }
             }
         }
     }
