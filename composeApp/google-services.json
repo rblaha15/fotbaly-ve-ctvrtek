@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "530653255530",
+    "project_id": "fotbaly-ve-ctvrtek",
+    "storage_bucket": "fotbaly-ve-ctvrtek.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530653255530:android:91ca7e6a740c235bc5f713",
+        "android_client_info": {
+          "package_name": "cz.rblaha15.fotbaly_ve_ctvrtek"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDg-n25ohKDejv63G7LF91OWwH1EUEIpiA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
