@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "build/dist/js/productionExecutable",
+    "public": "jsApp/build/dist/js/productionExecutable",
     "ignore": [
       "firebase.json",
       "**/.*",

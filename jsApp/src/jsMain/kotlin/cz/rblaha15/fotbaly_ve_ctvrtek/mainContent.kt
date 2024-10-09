@@ -13,6 +13,7 @@ import io.kvision.html.div
 import io.kvision.html.icon
 import io.kvision.html.main
 import io.kvision.html.p
+import io.kvision.navbar.NavbarExpand
 import io.kvision.navbar.NavbarType
 import io.kvision.navbar.navbar
 import io.kvision.state.bind
@@ -38,6 +39,7 @@ fun Container.mainContent(
 private fun Container.navBar() = navbar(
     label = "Fotbaly ve čtvrtek",
     type = NavbarType.STICKYTOP,
+    expand = NavbarExpand.ALWAYS,
 ) {
     val userAgent = window.navigator.userAgent.lowercase()
     if ("android" in userAgent) {
@@ -46,7 +48,7 @@ private fun Container.navBar() = navbar(
             style = ButtonStyle.OUTLINESECONDARY,
         ) {
             onClick {
-                val url = "intent://fotbaly_ve_ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly-ve-ctvrtek;end"
+                val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
                 (document.createElement("iframe") as HTMLIFrameElement).apply {
                     src = url
                     onload = {
