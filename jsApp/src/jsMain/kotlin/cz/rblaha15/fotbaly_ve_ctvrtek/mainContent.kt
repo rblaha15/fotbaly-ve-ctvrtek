@@ -40,8 +40,7 @@ private fun Container.navBar() = navbar(
     type = NavbarType.STICKYTOP,
 ) {
     val userAgent = window.navigator.userAgent.lowercase();
-    val isAndroid = "android" in userAgent
-    if (isAndroid) {
+    if ("android" in userAgent) {
         button(
             "App",
             style = ButtonStyle.OUTLINESECONDARY,
