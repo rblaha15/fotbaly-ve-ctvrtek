@@ -39,25 +39,25 @@ private fun Container.navBar() = navbar(
     label = "Fotbaly ve čtvrtek",
     type = NavbarType.STICKYTOP,
 ) {
-    val userAgent = window.navigator.userAgent.lowercase();
+    val userAgent = window.navigator.userAgent.lowercase()
     if ("android" in userAgent) {
         button(
             "App",
             style = ButtonStyle.OUTLINESECONDARY,
         ) {
             onClick {
-                val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly-ve-ctvrtek;end"
+                val url = "intent://fotbaly_ve_ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly-ve-ctvrtek;end"
                 (document.createElement("iframe") as HTMLIFrameElement).apply {
                     src = url
                     onload = {
                         window.open("https://github.com/rblaha15/fotbaly-ve-ctvrtek/release/download/latest/fotbaly-ve-ctvrtek.apk")
                     }
                     style.display = "none"
-                    document.body?.appendChild(this);
+                    document.body?.appendChild(this)
 
                     window.setTimeout({
                         document.body?.removeChild(this)
-                    }, 1000);
+                    }, 1000)
                 }
             }
         }
