@@ -2,10 +2,8 @@ package cz.rblaha15.fotbaly_ve_ctvrtek
 
 import io.kvision.Application
 import io.kvision.BootstrapModule
-import io.kvision.html.p
 import io.kvision.module
 import io.kvision.panel.root
-import io.kvision.routing.Routing
 import io.kvision.startApplication
 import io.kvision.theme.Theme
 import io.kvision.theme.ThemeManager
@@ -30,16 +28,7 @@ class App : Application() {
 
     override fun start() {
         root("kvapp") {
-            Routing.init(useHash = false)
-                .on("/reset", {
-                    val p = p()
-                    viewModel.clearAll {
-                        p.content = "Ok"
-                    }
-                })
-                .on({
-                    mainContent(viewModel)
-                })
+            mainContent(viewModel)
         }
     }
 }

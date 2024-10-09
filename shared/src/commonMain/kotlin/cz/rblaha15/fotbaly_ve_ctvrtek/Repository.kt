@@ -24,7 +24,6 @@ interface NotificationService {
 interface FirebaseDataSource {
     val answers: Flow<Map<Person, AnswerState>>
     suspend fun saveAnswer(person: Person, answer: AnswerState?)
-    suspend fun clearAllAnswers()
 }
 
 class Repository(
@@ -83,10 +82,6 @@ class Repository(
         person = getName(),
         answer = answer
     )
-
-    suspend fun clearAnswers() {
-        firebaseDataSource.clearAllAnswers()
-    }
 }
 
 private fun NotificationDay.toKotlinxDayOfWeek() = when (this) {

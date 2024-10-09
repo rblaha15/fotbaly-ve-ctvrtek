@@ -68,10 +68,6 @@ fun Context.createRepository() = Repository(
         override val answers = answersReference.asFlow().map { snapshot ->
             snapshot.getValue<Map<Person, AnswerState>?>() ?: emptyMap()
         }
-
-        override suspend fun clearAllAnswers() {
-            answersReference.removeValue().await()
-        }
     }
 )
 

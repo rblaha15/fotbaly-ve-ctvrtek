@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -29,13 +30,6 @@ class ManViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), emptyList())
 
-    init {
-        viewModelScope.launch {
-            answers.collect {
-                println("answers: $it")
-            }
-        }
-    }
     fun setName(name: String) = viewModelScope.launch {
         _name.value = name
         repository.saveName(name)
@@ -65,7 +59,8 @@ class ManViewModel(
         repository.saveAnswer(answer)
     }
 
-    fun clearAll(onFinish: () -> Unit) = viewModelScope.launch {
-        repository.clearAnswers().also { onFinish() }
+    val count = repository.answers.map { answers ->
+        answers.count { it.value == AnswerState.Yes }
     }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), 0)
 }

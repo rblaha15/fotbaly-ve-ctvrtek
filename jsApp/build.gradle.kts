@@ -27,6 +27,7 @@ kotlin {
                 implementation(libs.kvision.routing.navigo.ng)
                 implementation(projects.shared)
                 implementation(libs.lifecycle.viewmodel.compose)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
     }

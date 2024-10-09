@@ -27,7 +27,7 @@ val firebaseConfig = mapOf(
     "messagingSenderId" to "530653255530",
     "appId" to "1:530653255530:web:6b9a5e0c8da07437c5f713",
     "measurementId" to "G-MTLT9YNXJB",
-);
+)
 
 fun createRepository() = Repository(
     settings = StorageSettings(),
@@ -53,10 +53,6 @@ fun createRepository() = Repository(
                 remove(child(reference, person)).await()
             else
                 set(child(reference, person), answer.name).await()
-        }
-
-        override suspend fun clearAllAnswers() {
-            remove(reference).await()
         }
     },
 )

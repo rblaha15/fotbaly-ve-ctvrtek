@@ -31,8 +31,15 @@ fun Container.mainContent(
         addCssClass("my-3")
 
         nameInput(viewModel)
+        counter(viewModel)
         myAnswerSelector(viewModel)
         answerList(viewModel)
+    }
+}
+
+fun Container.counter(viewModel: ManViewModel) {
+    p().bind(viewModel.count) {
+        content = "Kolik nás bude: $it"
     }
 }
 

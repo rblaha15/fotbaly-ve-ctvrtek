@@ -65,6 +65,7 @@ fun AppContent(
     myAnswer: AnswerState?,
     onMyAnswerChange: (AnswerState?) -> Unit,
     name: String,
+    count: Int,
     onNameChange: (String) -> Unit,
     areNotificationsEnabled: Boolean,
     setNotificationsEnabled: (Boolean) -> Unit,
@@ -108,6 +109,7 @@ fun AppContent(
                 name = name,
                 onNameChange = onNameChange,
             )
+            Counter(count = count)
             MyAnswer(
                 myAnswer = myAnswer,
                 onMyAnswerChange = onMyAnswerChange,
@@ -117,6 +119,11 @@ fun AppContent(
             )
         }
     }
+}
+
+@Composable
+fun Counter(count: Int) {
+    Text("Kolik nás bude: $count", Modifier.padding(vertical = 8.dp))
 }
 
 @OptIn(ExperimentalPermissionsApi::class)

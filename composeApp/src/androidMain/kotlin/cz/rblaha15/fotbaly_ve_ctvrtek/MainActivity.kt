@@ -25,8 +25,9 @@ class MainActivity : ComponentActivity() {
             }
             val answers by viewModel.answers.collectAsStateWithLifecycle()
             val name by viewModel.name.collectAsStateWithLifecycle()
-            val myAnswer = viewModel.myAnswer.collectAsStateWithLifecycle()
+            val myAnswer by viewModel.myAnswer.collectAsStateWithLifecycle()
             val areNotificationsEnabled by viewModel.areNotificationsEnabled.collectAsStateWithLifecycle()
+            val count by viewModel.count.collectAsStateWithLifecycle()
 
             FotbalyTheme {
                 Surface(Modifier.fillMaxSize()) {
@@ -34,7 +35,8 @@ class MainActivity : ComponentActivity() {
                         answers = answers,
                         name = name,
                         onNameChange = viewModel::setName,
-                        myAnswer = myAnswer.value,
+                        myAnswer = myAnswer,
+                        count = count,
                         onMyAnswerChange = viewModel::setMyAnswer,
                         areNotificationsEnabled = areNotificationsEnabled,
                         setNotificationsEnabled = viewModel::setNotificationsEnabled,
