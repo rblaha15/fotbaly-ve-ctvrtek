@@ -81,7 +81,7 @@ fun AppContent(
                             CustomTabsIntent.Builder()
                                 .setShowTitle(true)
                                 .build()
-                                .launchUrl(context, "https://fotbalyvectvrtek.web.app/".toUri())
+                                .launchUrl(context, "https://fotbaly-ve-ctvrtek.web.app/".toUri())
                         }
                     ) {
                         Icon(
