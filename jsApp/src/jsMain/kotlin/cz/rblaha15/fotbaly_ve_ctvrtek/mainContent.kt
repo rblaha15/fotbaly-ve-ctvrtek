@@ -6,11 +6,10 @@ import io.kvision.core.addBsColor
 import io.kvision.core.onClick
 import io.kvision.core.onInput
 import io.kvision.form.text.text
-import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
-import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.icon
+import io.kvision.html.link
 import io.kvision.html.main
 import io.kvision.html.p
 import io.kvision.navbar.NavbarExpand
@@ -48,12 +47,12 @@ private fun Container.navBar() = navbar(
 ) {
     val userAgent = window.navigator.userAgent.lowercase()
     if ("android" in userAgent) {
-        button(
-            "App",
-            style = ButtonStyle.OUTLINESECONDARY,
+        link(
+            "Stáhnout aplikaci",
+            icon = "bi-mobile",
+            url = "https://github.com/rblaha15/fotbaly-ve-ctvrtek/releases/latest/download/fotbaly-ve-ctvrtek.apk"
         ) {
-            onClick {
-                window.open("https://github.com/rblaha15/fotbaly-ve-ctvrtek/release/download/latest/fotbaly-ve-ctvrtek.apk")
+//            onClick {
 //                (document.createElement("iframe") as HTMLIFrameElement).apply {
 //                    val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
 //                    src = url
@@ -67,7 +66,7 @@ private fun Container.navBar() = navbar(
 //                        document.body?.removeChild(this)
 //                    }, 1000)
 //                }
-            }
+//            }
         }
     }
 }
