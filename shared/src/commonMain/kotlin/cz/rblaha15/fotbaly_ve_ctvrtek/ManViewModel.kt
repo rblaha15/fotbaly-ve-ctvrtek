@@ -24,7 +24,6 @@ class ManViewModel(
     val answers = repository.answers
         .combine(name) { map, name ->
             map
-                .filterKeys { it != name }
                 .toList()
                 .sortedBy { it.first }
         }
