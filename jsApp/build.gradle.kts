@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kVision)
 }
 
-version = "1.0.0"
+version = "1.0.1"
 group = "cz.rblaha15.fotbaly_ve_ctvrtek"
 
 kotlin {
