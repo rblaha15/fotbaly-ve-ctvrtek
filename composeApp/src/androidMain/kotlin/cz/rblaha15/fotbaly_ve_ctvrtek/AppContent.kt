@@ -113,6 +113,7 @@ fun AppContent(
             MyAnswer(
                 myAnswer = myAnswer,
                 onMyAnswerChange = onMyAnswerChange,
+                name = name,
             )
             AnswersList(
                 answers = answers,
@@ -208,7 +209,17 @@ fun NotificationsToggle(
 fun MyAnswer(
     myAnswer: AnswerState?,
     onMyAnswerChange: (AnswerState?) -> Unit,
+    name: String,
 ) {
+    var showError by remember { mutableStateOf(false) }
+    val shakeOffset = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(name, showError) {
+        if (showError && name.isNotBlank()) {
+            showError = false
+        }
+    }
+
     ListItem(
         headlineContent = { Text("Půjdeš ve čtvrtek na fotbal?") },
         Modifier
@@ -223,7 +234,16 @@ fun MyAnswer(
                 AnswerState.entries.forEach { state ->
                     TextButton(
                         onClick = {
-                            onMyAnswerChange(if (state == myAnswer) null else state)
+                            if (name.isBlank()) scope.launch {
+                                showError = true
+                                repeat(4) {
+                                    shakeOffset.animateTo(-15f, animationSpec = tween(50))
+                                    shakeOffset.animateTo(15f, animationSpec = tween(50))
+                                }
+                                shakeOffset.animateTo(0f, animationSpec = tween(50))
+                            } else {
+                                onMyAnswerChange(if (state == myAnswer) null else state)
+                            }
                         },
                     ) {
                         Icon(
@@ -251,6 +271,20 @@ fun MyAnswer(
             }
         }
     )
+
+    AnimatedVisibility(
+        visible = showError,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Text(
+            text = "Musíte zadat jméno!",
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(shakeOffset.value.roundToInt(), 0) }
+        )
+    }
 }
 
 @Composable
