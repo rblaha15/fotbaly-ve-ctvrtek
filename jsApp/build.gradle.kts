@@ -19,16 +19,14 @@ kotlin {
 
     sourceSets {
         jsMain.dependencies {
-            dependencies {
-                implementation(libs.kvision)
-                implementation(libs.kvision.bootstrap)
-                implementation(libs.kvision.state)
-                implementation(libs.kvision.state.flow)
-                implementation(libs.kvision.routing.navigo.ng)
-                implementation(projects.shared)
-                implementation(libs.lifecycle.viewmodel.compose)
-                implementation(libs.kotlinx.coroutines.core)
-            }
+            implementation(libs.kvision)
+            implementation(libs.kvision.bootstrap)
+            implementation(libs.kvision.state)
+            implementation(libs.kvision.state.flow)
+            implementation(libs.kvision.routing.navigo.ng)
+            implementation(projects.shared)
+            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }
