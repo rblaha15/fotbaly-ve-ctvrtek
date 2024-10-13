@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "cutani-u-jelena",
     "public": "jsApp/build/dist/js/productionExecutable",
     "ignore": [
       "firebase.json",
