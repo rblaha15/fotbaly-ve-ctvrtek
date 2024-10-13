@@ -35,7 +35,7 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
 
                 val channel = NotificationChannel(
                     /* id = */ "fotbal",
-                    /* name = */ "Fotbaly ve čtvrtek",
+                    /* name = */ "Čutání u Jelena",
                     /* importance = */ NotificationManager.IMPORTANCE_HIGH,
                 )
                 notificationManager.createNotificationChannel(channel)

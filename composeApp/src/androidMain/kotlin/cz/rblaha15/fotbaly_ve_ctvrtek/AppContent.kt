@@ -75,7 +75,7 @@ fun AppContent(
         Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Fotbaly ve čtvrtek") },
+                title = { Text("Čutání u Jelena") },
                 actions = {
                     val context = LocalContext.current
                     IconButton(

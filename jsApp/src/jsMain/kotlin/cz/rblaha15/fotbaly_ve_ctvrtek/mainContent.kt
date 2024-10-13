@@ -41,7 +41,7 @@ fun Container.counter(viewModel: ManViewModel) {
 }
 
 private fun Container.navBar() = navbar(
-    label = "Fotbaly ve čtvrtek",
+    label = "Čutání u Jelena",
     type = NavbarType.STICKYTOP,
     expand = NavbarExpand.ALWAYS,
 ) {
