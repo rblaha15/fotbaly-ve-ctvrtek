@@ -140,7 +140,7 @@ private fun Div.answers(
                 state == selected -> when (state) {
                     AnswerState.Yes -> BsColor.SUCCESS
                     AnswerState.No -> BsColor.DANGER
-                    AnswerState.Maybe -> BsColor.INFO
+                    AnswerState.Maybe -> BsColor.WARNING
                 }
 
                 else -> BsColor.BODY

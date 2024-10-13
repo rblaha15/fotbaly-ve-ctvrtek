@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -260,9 +261,9 @@ fun MyAnswer(
                             tint = when {
                                 myAnswer != state -> MaterialTheme.colorScheme.onSecondaryContainer
                                 else -> when (state) {
-                                    AnswerState.Yes -> MaterialTheme.colorScheme.primary
-                                    AnswerState.No -> MaterialTheme.colorScheme.error
-                                    AnswerState.Maybe -> MaterialTheme.colorScheme.tertiary
+                                    AnswerState.Yes -> Color.Green
+                                    AnswerState.No -> Color.Red
+                                    AnswerState.Maybe -> Color.Yellow
                                 }
                             },
                         )
@@ -341,9 +342,9 @@ fun AnswersList(answers: List<Pair<Person, AnswerState>>) = LazyColumn {
                             tint = when {
                                 answer != state -> MaterialTheme.colorScheme.onSurface
                                 else -> when (state) {
-                                    AnswerState.Yes -> MaterialTheme.colorScheme.primary
-                                    AnswerState.No -> MaterialTheme.colorScheme.error
-                                    AnswerState.Maybe -> MaterialTheme.colorScheme.tertiary
+                                    AnswerState.Yes -> Color.Green
+                                    AnswerState.No -> Color.Red
+                                    AnswerState.Maybe -> Color.Yellow
                                 }
                             },
                         )
