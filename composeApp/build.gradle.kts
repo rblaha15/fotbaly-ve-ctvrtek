@@ -53,8 +53,8 @@ android {
         applicationId = "cz.rblaha15.fotbaly_ve_ctvrtek"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
     }
     packaging {
         resources {
