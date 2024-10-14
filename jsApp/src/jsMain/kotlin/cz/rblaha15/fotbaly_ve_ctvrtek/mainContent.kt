@@ -9,13 +9,12 @@ import io.kvision.form.text.text
 import io.kvision.html.Div
 import io.kvision.html.div
 import io.kvision.html.icon
-import io.kvision.html.link
+import io.kvision.html.image
 import io.kvision.html.main
+import io.kvision.html.nav
 import io.kvision.html.p
-import io.kvision.navbar.NavbarExpand
-import io.kvision.navbar.NavbarType
-import io.kvision.navbar.navbar
 import io.kvision.state.bind
+import io.kvision.utils.px
 import io.kvision.utils.rem
 import kotlinx.browser.window
 
@@ -40,18 +39,33 @@ fun Container.counter(viewModel: ManViewModel) {
     }
 }
 
-private fun Container.navBar() = navbar(
-    label = "Čutání u Jelena",
-    type = NavbarType.STICKYTOP,
-    expand = NavbarExpand.ALWAYS,
-) {
-    val userAgent = window.navigator.userAgent.lowercase()
-    if ("android" in userAgent) {
-        link(
-            "Stáhnout aplikaci",
-            icon = "bi-mobile",
-            url = "https://github.com/rblaha15/fotbaly-ve-ctvrtek/releases/latest/download/fotbaly-ve-ctvrtek.apk"
-        ) {
+private fun Container.navBar() = nav {
+    addCssClass("navbar")
+    addCssClass("bg-body-tertiary")
+    div {
+        addCssClass("container-fluid")
+        div {
+            addCssClass("navbar-brand")
+            addCssClass("me-auto")
+            image(
+                src = "./icon.jpg"
+            ) {
+                addCssClass("d-inline-block")
+                addCssClass("align-text-top")
+                addCssClass("me-2")
+                width = 32.px
+                height = 32.px
+            }
+            +"Čutání u Jelena"
+        }
+
+        val userAgent = window.navigator.userAgent.lowercase()
+        if ("android" in userAgent) {
+//            link(
+//                "Stáhnout aplikaci",
+//                icon = "bi-mobile",
+//                url = "https://github.com/rblaha15/fotbaly-ve-ctvrtek/releases/latest/download/fotbaly-ve-ctvrtek.apk"
+//            ) {
 //            onClick {
 //                (document.createElement("iframe") as HTMLIFrameElement).apply {
 //                    val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
@@ -66,6 +80,7 @@ private fun Container.navBar() = navbar(
 //                        document.body?.removeChild(this)
 //                    }, 1000)
 //                }
+//            }
 //            }
         }
     }
