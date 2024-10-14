@@ -1,7 +1,12 @@
 package cz.rblaha15.fotbaly_ve_ctvrtek
 
-import com.russhwolf.settings.Settings
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.coroutines.getBooleanStateFlow
+import com.russhwolf.settings.coroutines.getStringOrNullStateFlow
 import com.russhwolf.settings.set
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek
@@ -27,19 +32,21 @@ interface FirebaseDataSource {
     suspend fun saveAnswer(person: Person, answer: AnswerState?)
 }
 
+@OptIn(ExperimentalSettingsApi::class)
 class Repository(
-    private val settings: Settings,
+    private val settings: ObservableSettings,
     private val notificationService: NotificationService,
     private val firebaseDataSource: FirebaseDataSource,
 ) {
-    fun getName() = settings.getStringOrNull("name")
+    private val scope = CoroutineScope(Dispatchers.Default)
 
+    fun getName() = settings.getStringOrNull("name")
+    val name = settings.getStringOrNullStateFlow(scope, "name")
     fun saveName(name: String) {
         settings["name"] = name
     }
 
-    fun getAreNotificationsEnabled() = settings.getBoolean("areNotificationsEnabled", false)
-
+    val areNotificationsEnabled = settings.getBooleanStateFlow(scope, "areNotificationsEnabled", false)
     fun setNotificationsEnabled(enabled: Boolean) {
         settings["areNotificationsEnabled"] = enabled
     }

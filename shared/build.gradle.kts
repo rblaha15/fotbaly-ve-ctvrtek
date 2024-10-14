@@ -22,6 +22,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.lifecycle.viewmodel.compose)
@@ -34,6 +35,7 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(libs.kotlin.stdlib.js)
+            implementation(libs.multiplatform.settings.make.observable)
             implementation(npm("firebase", "^10.14.0"))
         }
     }

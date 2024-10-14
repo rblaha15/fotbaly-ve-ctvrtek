@@ -2,10 +2,8 @@ package cz.rblaha15.fotbaly_ve_ctvrtek
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -17,8 +15,7 @@ typealias Person = String
 class ManViewModel(
     private val repository: Repository,
 ) : ViewModel() {
-    private val _name = MutableStateFlow(repository.getName())
-    val name = _name.asStateFlow()
+    val name = repository.name
 
     val answers = repository.answers
         .combine(name) { map, name ->
@@ -35,16 +32,12 @@ class ManViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), emptyList())
 
     fun setName(name: String) = viewModelScope.launch {
-        _name.value = name
         repository.saveName(name)
     }
 
-    private val _areNotificationsEnabled = MutableStateFlow(repository.getAreNotificationsEnabled())
-    val areNotificationsEnabled = _areNotificationsEnabled.asStateFlow()
+    val areNotificationsEnabled = repository.areNotificationsEnabled
 
     fun setNotificationsEnabled(enabled: Boolean) = viewModelScope.launch {
-        _areNotificationsEnabled.value = enabled
-
         if (enabled)
             repository.scheduleNotification(NotificationDay.Tuesday)
         else

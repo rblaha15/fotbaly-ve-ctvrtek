@@ -1,6 +1,8 @@
 package cz.rblaha15.fotbaly_ve_ctvrtek
 
+import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.StorageSettings
+import com.russhwolf.settings.observable.makeObservable
 import firebase.database.DataSnapshot
 import firebase.database.DatabaseReference
 import firebase.database.child
@@ -29,8 +31,9 @@ val firebaseConfig = mapOf(
     "measurementId" to "G-MTLT9YNXJB",
 )
 
+@OptIn(ExperimentalSettingsApi::class)
 fun createRepository() = Repository(
-    settings = StorageSettings(),
+    settings = StorageSettings().makeObservable(),
     notificationService = object : NotificationService {
         override fun scheduleNotification(scheduleTime: Instant, day: NotificationDay) {}
         override fun cancelNotification() {}

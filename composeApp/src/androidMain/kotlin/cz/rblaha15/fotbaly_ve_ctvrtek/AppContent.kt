@@ -8,6 +8,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Check
@@ -30,7 +30,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
@@ -49,7 +48,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -87,7 +85,7 @@ fun AppContent(
                             CustomTabsIntent.Builder()
                                 .setShowTitle(true)
                                 .build()
-                                .launchUrl(context, "https://fotbaly-ve-ctvrtek.web.app/".toUri())
+                                .launchUrl(context, "https://cutani-u-jelena.web.app/".toUri())
                         }
                     ) {
                         Icon(
@@ -211,6 +209,7 @@ fun NotificationsToggle(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyAnswer(
     myAnswer: AnswerState?,
@@ -225,18 +224,15 @@ fun MyAnswer(
             showError = false
         }
     }
-
-    ListItem(
-        headlineContent = { Text("Půjdeš ve čtvrtek na fotbal?") },
-        Modifier
-            .padding(vertical = 8.dp)
-            .clip(CircleShape),
-        colors = ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        ),
-        trailingContent = {
-            Row {
+    OutlinedTextField(
+        value = " ",
+        onValueChange = {},
+        Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        leadingIcon = {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
                 AnswerState.entries.forEach { state ->
                     TextButton(
                         onClick = {
@@ -275,8 +271,64 @@ fun MyAnswer(
                     }
                 }
             }
-        }
+        },
+        enabled = true,
+        readOnly = true,
+        singleLine = true,
+        label = { Text("Půjdeš ve čtvrtek na fotbal?") },
     )
+
+//    ListItem(
+//        headlineContent = { Text("Půjdeš ve čtvrtek na fotbal?") },
+//        Modifier
+//            .padding(vertical = 8.dp)
+//            .clip(CircleShape),
+//        colors = ListItemDefaults.colors(
+//            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+//            headlineColor = MaterialTheme.colorScheme.onSecondaryContainer,
+//        ),
+//        trailingContent = {
+//            Row {
+//                AnswerState.entries.forEach { state ->
+//                    TextButton(
+//                        onClick = {
+//                            if (name == null) scope.launch {
+//                                showError = true
+//                                repeat(4) {
+//                                    shakeOffset.animateTo(-15f, animationSpec = tween(50))
+//                                    shakeOffset.animateTo(15f, animationSpec = tween(50))
+//                                }
+//                                shakeOffset.animateTo(0f, animationSpec = tween(50))
+//                            } else {
+//                                onMyAnswerChange(if (state == myAnswer) null else state)
+//                            }
+//                        },
+//                    ) {
+//                        Icon(
+//                            imageVector = when (state) {
+//                                AnswerState.Yes -> Icons.Default.Check
+//                                AnswerState.No -> Icons.Default.Close
+//                                AnswerState.Maybe -> Icons.AutoMirrored.Default.HelpOutline
+//                            },
+//                            contentDescription = when (state) {
+//                                AnswerState.Yes -> "Přijdu"
+//                                AnswerState.No -> "Nepřijdu"
+//                                AnswerState.Maybe -> "Nevím"
+//                            },
+//                            tint = when {
+//                                myAnswer != state -> MaterialTheme.colorScheme.onSecondaryContainer
+//                                else -> when (state) {
+//                                    AnswerState.Yes -> Color.Green
+//                                    AnswerState.No -> Color.Red
+//                                    AnswerState.Maybe -> Color.Yellow
+//                                }
+//                            },
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    )
 
     AnimatedVisibility(
         visible = showError,
@@ -352,6 +404,7 @@ fun ColumnScope.AnswersList(answers: List<Pair<Person, AnswerState>>) = LazyColu
     items(answers) { (name, answer) ->
         ListItem(
             headlineContent = { Text(name) },
+            Modifier.animateItem(),
             trailingContent = {
                 Row {
                     AnswerState.entries.forEach { state ->
