@@ -3,9 +3,9 @@ package cz.rblaha15.fotbaly_ve_ctvrtek
 import io.kvision.core.BsColor
 import io.kvision.core.Container
 import io.kvision.core.addBsColor
+import io.kvision.core.onChange
 import io.kvision.core.onClick
-import io.kvision.core.onInput
-import io.kvision.form.text.text
+import io.kvision.form.select.select
 import io.kvision.html.Div
 import io.kvision.html.div
 import io.kvision.html.icon
@@ -16,7 +16,6 @@ import io.kvision.html.p
 import io.kvision.state.bind
 import io.kvision.utils.px
 import io.kvision.utils.rem
-import kotlinx.browser.window
 
 fun Container.mainContent(
     viewModel: ManViewModel,
@@ -26,9 +25,9 @@ fun Container.mainContent(
         addCssClass("container")
         addCssClass("my-3")
 
-        nameInput(viewModel)
-        counter(viewModel)
+        nameSelect(viewModel)
         myAnswerSelector(viewModel)
+        counter(viewModel)
         answerList(viewModel)
     }
 }
@@ -59,8 +58,8 @@ private fun Container.navBar() = nav {
             +"Čutání u Jelena"
         }
 
-        val userAgent = window.navigator.userAgent.lowercase()
-        if ("android" in userAgent) {
+//        val userAgent = window.navigator.userAgent.lowercase()
+//        if ("android" in userAgent) {
 //            link(
 //                "Stáhnout aplikaci",
 //                icon = "bi-mobile",
@@ -82,7 +81,7 @@ private fun Container.navBar() = nav {
 //                }
 //            }
 //            }
-        }
+//        }
     }
 }
 
@@ -121,16 +120,31 @@ private fun Container.myAnswerSelector(viewModel: ManViewModel) = div()
         )
     }
 
-private fun Container.nameInput(viewModel: ManViewModel) = text(
+//private fun Container.nameSelect(viewModel: ManViewModel) = text(
+//    label = "Jméno",
+//    floating = true,
+//) {
+//    onInput {
+//        viewModel.setName(value ?: "")
+//    }
+//}.bind(viewModel.name) {
+//    value = it
+//}
+private fun Container.nameSelect(viewModel: ManViewModel) = select(
     label = "Jméno",
     floating = true,
 ) {
-    onInput {
+    onChange {
         viewModel.setName(value ?: "")
     }
+    placeholder = "Vyber své jméno"
 }.bind(viewModel.name) {
     value = it
+}.bind(viewModel.people) {
+    options = it.pairs()
 }
+
+private fun List<String>.pairs() = map { it to it }
 
 private fun Div.answers(
     selected: AnswerState?,

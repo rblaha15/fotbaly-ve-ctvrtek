@@ -28,12 +28,14 @@ class MainActivity : ComponentActivity() {
             val myAnswer by viewModel.myAnswer.collectAsStateWithLifecycle()
             val areNotificationsEnabled by viewModel.areNotificationsEnabled.collectAsStateWithLifecycle()
             val count by viewModel.count.collectAsStateWithLifecycle()
+            val people by viewModel.people.collectAsStateWithLifecycle()
 
             FotbalyTheme {
                 Surface(Modifier.fillMaxSize()) {
                     AppContent(
                         answers = answers,
                         name = name,
+                        people = people,
                         onNameChange = viewModel::setName,
                         myAnswer = myAnswer,
                         count = count,

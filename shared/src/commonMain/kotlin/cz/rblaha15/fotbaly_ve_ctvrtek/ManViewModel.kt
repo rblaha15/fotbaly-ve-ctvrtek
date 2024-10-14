@@ -17,7 +17,6 @@ typealias Person = String
 class ManViewModel(
     private val repository: Repository,
 ) : ViewModel() {
-
     private val _name = MutableStateFlow(repository.getName())
     val name = _name.asStateFlow()
 
@@ -26,6 +25,12 @@ class ManViewModel(
             map
                 .toList()
                 .sortedBy { it.first }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), emptyList())
+
+    val people = repository.people
+        .map { names ->
+            names.sorted()
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), emptyList())
 

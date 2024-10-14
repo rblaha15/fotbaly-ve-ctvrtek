@@ -23,6 +23,7 @@ interface NotificationService {
 
 interface FirebaseDataSource {
     val answers: Flow<Map<Person, AnswerState>>
+    val people: Flow<List<Person>>
     suspend fun saveAnswer(person: Person, answer: AnswerState?)
 }
 
@@ -31,7 +32,7 @@ class Repository(
     private val notificationService: NotificationService,
     private val firebaseDataSource: FirebaseDataSource,
 ) {
-    fun getName() = settings.getString("name", "")
+    fun getName() = settings.getStringOrNull("name")
 
     fun saveName(name: String) {
         settings["name"] = name
@@ -72,16 +73,19 @@ class Repository(
     )
 
     val answers = firebaseDataSource.answers
+    val people = firebaseDataSource.people
 
     private suspend fun saveAnswer(
         person: Person,
         answer: AnswerState?,
     ) = firebaseDataSource.saveAnswer(person, answer)
 
-    suspend fun saveAnswer(answer: AnswerState?) = saveAnswer(
-        person = getName(),
-        answer = answer
-    )
+    suspend fun saveAnswer(answer: AnswerState?) {
+        saveAnswer(
+            person = getName() ?: return,
+            answer = answer
+        )
+    }
 }
 
 private fun NotificationDay.toKotlinxDayOfWeek() = when (this) {

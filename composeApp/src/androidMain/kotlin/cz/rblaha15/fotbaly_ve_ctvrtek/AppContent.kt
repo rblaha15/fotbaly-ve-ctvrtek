@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,12 +23,16 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,7 +42,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +53,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -64,8 +67,9 @@ import kotlin.math.roundToInt
 fun AppContent(
     answers: List<Pair<Person, AnswerState>>,
     myAnswer: AnswerState?,
+    people: List<String>,
     onMyAnswerChange: (AnswerState?) -> Unit,
-    name: String,
+    name: String?,
     count: Int,
     onNameChange: (String) -> Unit,
     areNotificationsEnabled: Boolean,
@@ -101,23 +105,24 @@ fun AppContent(
                 .padding(innerPadding)
                 .padding(all = 16.dp),
         ) {
-            NotificationsToggle(
-                areNotificationsEnabled = areNotificationsEnabled,
-                setNotificationsEnabled = setNotificationsEnabled,
-                name = name,
-            )
             NameInput(
                 name = name,
+                people = people,
                 onNameChange = onNameChange,
             )
-            Counter(count = count)
             MyAnswer(
                 myAnswer = myAnswer,
                 onMyAnswerChange = onMyAnswerChange,
                 name = name,
             )
+            Counter(count = count)
             AnswersList(
                 answers = answers,
+            )
+            NotificationsToggle(
+                areNotificationsEnabled = areNotificationsEnabled,
+                setNotificationsEnabled = setNotificationsEnabled,
+                name = name,
             )
         }
     }
@@ -133,7 +138,7 @@ fun Counter(count: Int) {
 fun NotificationsToggle(
     areNotificationsEnabled: Boolean,
     setNotificationsEnabled: (Boolean) -> Unit,
-    name: String,
+    name: String?,
 ) {
     var waitingForPermission by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
@@ -149,7 +154,7 @@ fun NotificationsToggle(
         }
     }
     LaunchedEffect(name, showError) {
-        if (showError && name.isNotBlank()) {
+        if (showError && name != null) {
             showError = false
         }
     }
@@ -158,7 +163,7 @@ fun NotificationsToggle(
     val scope = rememberCoroutineScope()
 
     val onCheckedChange = { it: Boolean ->
-        if (it && name.isBlank()) scope.launch {
+        if (it && name == null) scope.launch {
             showError = true
             repeat(4) {
                 shakeOffset.animateTo(-15f, animationSpec = tween(50))
@@ -210,13 +215,13 @@ fun NotificationsToggle(
 fun MyAnswer(
     myAnswer: AnswerState?,
     onMyAnswerChange: (AnswerState?) -> Unit,
-    name: String,
+    name: String?,
 ) {
     var showError by remember { mutableStateOf(false) }
     val shakeOffset = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
     LaunchedEffect(name, showError) {
-        if (showError && name.isNotBlank()) {
+        if (showError && name != null) {
             showError = false
         }
     }
@@ -235,7 +240,7 @@ fun MyAnswer(
                 AnswerState.entries.forEach { state ->
                     TextButton(
                         onClick = {
-                            if (name.isBlank()) scope.launch {
+                            if (name == null) scope.launch {
                                 showError = true
                                 repeat(4) {
                                     shakeOffset.animateTo(-15f, animationSpec = tween(50))
@@ -288,39 +293,62 @@ fun MyAnswer(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NameInput(name: String, onNameChange: (String) -> Unit) = Row {
-    var localName by remember(name) { mutableStateOf(name) }
-    val isEditing by remember(name, localName) {
-        derivedStateOf { localName != name }
-    }
-    val keyboardController = LocalSoftwareKeyboardController.current
+fun NameInput(
+    name: String?,
+    people: List<String>,
+    onNameChange: (String) -> Unit,
+) = Row {
+    var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    OutlinedTextField(
-        value = localName,
-        onValueChange = { localName = it },
-        Modifier
-            .fillMaxWidth(),
-        label = { Text("Jméno") },
-        trailingIcon = {
-            if (isEditing) IconButton(
-                onClick = {
-                    onNameChange(localName)
-                    focusManager.clearFocus(true)
-                    keyboardController?.hide()
-                },
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Check,
-                    contentDescription = "Uložit",
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+    ) {
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            readOnly = true,
+            value = name ?: "",
+            placeholder = { Text("Vyber své jméno") },
+            onValueChange = {},
+            label = { Text(text = "Jméno") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+                focusManager.clearFocus()
+            },
+        ) {
+            people.forEachIndexed { i, option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onNameChange(option)
+                        expanded = false
+                        focusManager.clearFocus()
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    leadingIcon = {
+                        if (option == name) Icon(Icons.Default.Check, null)
+                    }
                 )
             }
         }
-    )
+    }
 }
 
 @Composable
-fun AnswersList(answers: List<Pair<Person, AnswerState>>) = LazyColumn {
+fun ColumnScope.AnswersList(answers: List<Pair<Person, AnswerState>>) = LazyColumn(
+    Modifier.weight(1F)
+) {
     items(answers) { (name, answer) ->
         ListItem(
             headlineContent = { Text(name) },

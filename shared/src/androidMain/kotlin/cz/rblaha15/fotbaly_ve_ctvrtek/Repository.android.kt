@@ -56,7 +56,9 @@ fun Context.createRepository() = Repository(
     firebaseDataSource = object : FirebaseDataSource {
 
         private val database = Firebase.database("https://fotbaly-ve-ctvrtek-default-rtdb.europe-west1.firebasedatabase.app/")
-        private val answersReference = database.getReference("fotbaly_ve_ctvrtek")
+        private val roomReference = database.getReference("rooms/cutani_u_jelena")
+        private val answersReference = roomReference.child("attendance")
+        private val peopleReference = roomReference.child("names")
 
         override suspend fun saveAnswer(person: Person, answer: AnswerState?) {
             if (answer == null)
@@ -67,6 +69,10 @@ fun Context.createRepository() = Repository(
 
         override val answers = answersReference.asFlow().map { snapshot ->
             snapshot.getValue<Map<Person, AnswerState>?>() ?: emptyMap()
+        }
+
+        override val people = peopleReference.asFlow().map { snapshot ->
+            snapshot.getValue<List<Person>?>() ?: emptyList()
         }
     }
 )

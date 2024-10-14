@@ -37,22 +37,30 @@ fun createRepository() = Repository(
     },
     firebaseDataSource = object : FirebaseDataSource {
 
-        val app = initializeApp(firebaseConfig)
-        val database = getDatabase(app, "https://fotbaly-ve-ctvrtek-default-rtdb.europe-west1.firebasedatabase.app")
-        val reference = ref(database, "fotbaly_ve_ctvrtek")
+        private val app = initializeApp(firebaseConfig)
+        private val database = getDatabase(app, "https://fotbaly-ve-ctvrtek-default-rtdb.europe-west1.firebasedatabase.app")
+        private val roomReference = ref(database, "rooms/cutani_u_jelena")
+        private val answersReference = child(roomReference, "attendance")
+        private val peopleReference = child(roomReference, "names")
 
-        override val answers = reference.asFlow().map { snapshot ->
+        override val answers = answersReference.asFlow().map { snapshot ->
             snapshot.value<Json?>()
                 ?.toMap()
                 ?.mapValues { (_, value) -> AnswerState.valueOf(value) }
                 ?: emptyMap()
         }
 
+        override val people = peopleReference.asFlow().map { snapshot ->
+            snapshot.value<Array<dynamic>?>()
+                ?.map { it as String }
+                ?: emptyList()
+        }
+
         override suspend fun saveAnswer(person: Person, answer: AnswerState?) {
             if (answer == null)
-                remove(child(reference, person)).await()
+                remove(child(answersReference, person)).await()
             else
-                set(child(reference, person), answer.name).await()
+                set(child(answersReference, person), answer.name).await()
         }
     },
 )
