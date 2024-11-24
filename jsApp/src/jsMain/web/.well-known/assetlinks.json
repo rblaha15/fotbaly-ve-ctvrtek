@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cz.rblaha15.fotbaly_ve_ctvrtek",
+      "sha256_cert_fingerprints": [
+        "91:62:B0:B0:B4:AE:6C:BB:ED:C6:3D:56:C6:4F:B3:FC:13:38:47:3C:14:F0:FB:FF:6E:D1:DD:A2:C9:FB:A5:0E"
+      ]
+    }
+  }
+]
