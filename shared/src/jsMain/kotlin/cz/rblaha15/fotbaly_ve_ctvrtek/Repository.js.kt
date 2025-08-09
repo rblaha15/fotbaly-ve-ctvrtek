@@ -17,7 +17,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
 import kotlin.js.Json
-import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -37,7 +36,7 @@ val firebaseConfig = mapOf(
 fun createRepository() = Repository(
     settings = StorageSettings().makeObservable(),
     notificationService = object : NotificationService {
-        override fun scheduleNotification(scheduleTime: Instant, windowLength: Duration, day: NotificationDay) {}
+        override fun scheduleNotification(scheduleTime: Instant, extras: Map<String, String>) {}
         override fun cancelNotification() {}
         override fun dismissNotification() {}
         override fun alarmsEnabled() = false

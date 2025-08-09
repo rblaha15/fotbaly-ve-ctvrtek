@@ -13,7 +13,7 @@ jobs:
         with:
           java-version: 21
       - run: chmod +x ./gradlew
-      - run: ./gradlew jsApp:clean
+      - run: ./gradlew jsApp:assemble
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
