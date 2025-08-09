@@ -67,7 +67,7 @@ private fun Container.navBar() = nav {
 //            ) {
 //            onClick {
 //                (document.createElement("iframe") as HTMLIFrameElement).apply {
-//                    val url = "intent://fotbaly-ve-ctvrtek.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
+//                    val url = "intent://cutani-u-jelena.web.app#Intent;scheme=https;package=cz.rblaha15.fotbaly_ve_ctvrtek;end"
 //                    src = url
 //                    onload = {
 //                        window.open("https://github.com/rblaha15/fotbaly-ve-ctvrtek/release/download/latest/fotbaly-ve-ctvrtek.apk")
