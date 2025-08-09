@@ -2,7 +2,7 @@ package cz.rblaha15.fotbaly_ve_ctvrtek
 
 import io.kvision.Application
 import io.kvision.BootstrapModule
-import io.kvision.module
+import io.kvision.Hot
 import io.kvision.panel.root
 import io.kvision.startApplication
 import io.kvision.theme.Theme
@@ -12,7 +12,7 @@ import io.kvision.theme.ThemeManager
 fun main() {
     startApplication(
         ::App,
-        module.hot,
+        js("import.meta.webpackHot").unsafeCast<Hot?>(),
         BootstrapModule,
     )
 }

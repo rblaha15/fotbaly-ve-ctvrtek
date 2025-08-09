@@ -35,13 +35,17 @@ class ManViewModel(
         repository.saveName(name)
     }
 
+    fun alarmsEnabled() = repository.alarmsEnabled()
+
     val areNotificationsEnabled = repository.areNotificationsEnabled
 
     fun setNotificationsEnabled(enabled: Boolean) = viewModelScope.launch {
         if (enabled)
-            repository.scheduleNotification(NotificationDay.Tuesday)
-        else
+            repository.scheduleNearestNotification()
+        else {
+            repository.dismissNotification()
             repository.cancelNotification()
+        }
 
         repository.setNotificationsEnabled(enabled)
     }
@@ -54,6 +58,7 @@ class ManViewModel(
 
     fun setMyAnswer(answer: AnswerState?) = viewModelScope.launch {
         repository.saveAnswer(answer)
+        repository.dismissNotification()
     }
 
     val count = repository.answers.map { answers ->

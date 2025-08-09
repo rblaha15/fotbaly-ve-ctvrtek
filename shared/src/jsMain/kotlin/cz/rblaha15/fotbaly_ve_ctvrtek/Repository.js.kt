@@ -16,8 +16,10 @@ import kotlinx.coroutines.await
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Instant
 import kotlin.js.Json
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 
 val firebaseConfig = mapOf(
@@ -31,12 +33,14 @@ val firebaseConfig = mapOf(
     "measurementId" to "G-MTLT9YNXJB",
 )
 
-@OptIn(ExperimentalSettingsApi::class)
+@OptIn(ExperimentalSettingsApi::class, ExperimentalTime::class)
 fun createRepository() = Repository(
     settings = StorageSettings().makeObservable(),
     notificationService = object : NotificationService {
-        override fun scheduleNotification(scheduleTime: Instant, day: NotificationDay) {}
+        override fun scheduleNotification(scheduleTime: Instant, windowLength: Duration, day: NotificationDay) {}
         override fun cancelNotification() {}
+        override fun dismissNotification() {}
+        override fun alarmsEnabled() = false
     },
     firebaseDataSource = object : FirebaseDataSource {
 

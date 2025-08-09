@@ -8,22 +8,28 @@ import com.russhwolf.settings.set
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
 import kotlinx.datetime.DayOfWeek
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 interface NotificationService {
     fun scheduleNotification(
         scheduleTime: Instant,
-        day: NotificationDay,
+        extras: Map<String, String>,
     )
 
     fun cancelNotification()
+
+    fun dismissNotification()
+
+    fun alarmsEnabled(): Boolean
 }
 
 interface FirebaseDataSource {
@@ -32,7 +38,7 @@ interface FirebaseDataSource {
     suspend fun saveAnswer(person: Person, answer: AnswerState?)
 }
 
-@OptIn(ExperimentalSettingsApi::class)
+@OptIn(ExperimentalSettingsApi::class, ExperimentalTime::class)
 class Repository(
     private val settings: ObservableSettings,
     private val notificationService: NotificationService,
@@ -46,38 +52,47 @@ class Repository(
         settings["name"] = name
     }
 
-    val areNotificationsEnabled = settings.getBooleanStateFlow(scope, "areNotificationsEnabled", false)
+    val areNotificationsEnabled =
+        settings.getBooleanStateFlow(scope, "areNotificationsEnabled", false)
+
     fun setNotificationsEnabled(enabled: Boolean) {
         settings["areNotificationsEnabled"] = enabled
     }
 
-    fun cancelNotification() {
-        notificationService.cancelNotification()
+    fun cancelNotification() = notificationService.cancelNotification()
+    fun dismissNotification() = notificationService.dismissNotification()
+
+    fun alarmsEnabled() = notificationService.alarmsEnabled()
+
+    fun scheduleNearestNotification() {
+        val currentTime = Clock.System.now()
+        val datetime = currentTime.toLocalDateTime(TimeZone.currentSystemDefault())
+        val day = if (datetime.dayOfWeek == DayOfWeek.TUESDAY && datetime.hour >= 16 || datetime.dayOfWeek == DayOfWeek.WEDNESDAY && datetime.hour < 16)
+            NotificationDay.Wednesday else NotificationDay.Tuesday
+        scheduleNotification(day)
     }
 
     fun scheduleNotification(
         day: NotificationDay,
     ) {
-
         val currentTime = Clock.System.now()
-        val inDays = (0..7).first {
-            currentTime.plus(it.days).toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek == day.toKotlinxDayOfWeek()
+        val start =
+            if (currentTime.toLocalDateTime(TimeZone.currentSystemDefault()).hour >= 16) 1 else 0
+        val date = (start..7).asSequence().map {
+            currentTime
+                .plus(it.days)
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
+        }.first {
+            it.dayOfWeek == day.toKotlinxDayOfWeek()
         }
-        val scheduledTime = currentTime
-            .plus(inDays.days)
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val scheduledTime = date
             .atTime(16, 0)
             .toInstant(TimeZone.currentSystemDefault())
+//        val scheduledTime = currentTime.plus(20.seconds)
 
-        notificationService.scheduleNotification(scheduledTime, day)
+        notificationService.scheduleNotification(scheduledTime, mapOf("day" to day.name))
     }
-
-    fun scheduleNewNotification(
-        nextWeek: Boolean,
-    ) = scheduleNotification(
-        if (nextWeek) NotificationDay.Tuesday
-        else NotificationDay.Wednesday
-    )
 
     val answers = firebaseDataSource.answers
     val people = firebaseDataSource.people

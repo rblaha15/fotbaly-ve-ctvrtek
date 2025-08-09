@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel = viewModel {
                 ManViewModel(
-                    repository = createRepository(),
+                    repository = createRepository(this@MainActivity),
                 )
             }
             val answers by viewModel.answers.collectAsStateWithLifecycle()
@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
                         onMyAnswerChange = viewModel::setMyAnswer,
                         areNotificationsEnabled = areNotificationsEnabled,
                         setNotificationsEnabled = viewModel::setNotificationsEnabled,
+                        alarmsEnabled = viewModel::alarmsEnabled,
                     )
                 }
             }

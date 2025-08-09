@@ -8,7 +8,7 @@ group = "cz.rblaha15.fotbaly_ve_ctvrtek"
 
 kotlin {
     js(IR) {
-        moduleName = "jsApp"
+        outputModuleName.set("jsApp")
         browser {
             commonWebpackConfig {
                 outputFileName = "main.bundle.js"

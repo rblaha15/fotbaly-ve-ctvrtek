@@ -1,7 +1,11 @@
 package cz.rblaha15.fotbaly_ve_ctvrtek
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -29,7 +33,6 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
@@ -72,6 +75,7 @@ fun AppContent(
     onNameChange: (String) -> Unit,
     areNotificationsEnabled: Boolean,
     setNotificationsEnabled: (Boolean) -> Unit,
+    alarmsEnabled: () -> Boolean,
 ) {
     Scaffold(
         Modifier.fillMaxSize(),
@@ -121,6 +125,7 @@ fun AppContent(
                 areNotificationsEnabled = areNotificationsEnabled,
                 setNotificationsEnabled = setNotificationsEnabled,
                 name = name,
+                alarmsEnabled = alarmsEnabled,
             )
         }
     }
@@ -136,21 +141,38 @@ fun Counter(count: Int) {
 fun NotificationsToggle(
     areNotificationsEnabled: Boolean,
     setNotificationsEnabled: (Boolean) -> Unit,
+    alarmsEnabled: () -> Boolean,
     name: String?,
 ) {
-    var waitingForPermission by remember { mutableStateOf(false) }
     var showError by remember { mutableStateOf(false) }
 
-    val permissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-        rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
-    else null
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        println(it.resultCode)
+        println(it.data)
+        println(alarmsEnabled())
+        if (alarmsEnabled())
+            setNotificationsEnabled(true)
+    }
 
-    LaunchedEffect(waitingForPermission, permissionState?.status) {
-        if (permissionState != null && permissionState.status.isGranted && waitingForPermission) {
-            waitingForPermission = false
+    val afterCanPostNotifications = {
+        if (!alarmsEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            launcher.launch(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                "package:cz.rblaha15.fotbaly_ve_ctvrtek".toUri()
+            ))
+            println("Launched")
+        } else {
             setNotificationsEnabled(true)
         }
     }
+
+    val permissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+        rememberPermissionState(
+            Manifest.permission.POST_NOTIFICATIONS
+        ) { result ->
+            if (result) afterCanPostNotifications()
+        }
+    else null
+
     LaunchedEffect(name, showError) {
         if (showError && name != null) {
             showError = false
@@ -160,19 +182,23 @@ fun NotificationsToggle(
     val shakeOffset = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
 
-    val onCheckedChange = { it: Boolean ->
-        if (it && name == null) scope.launch {
-            showError = true
-            repeat(4) {
-                shakeOffset.animateTo(-15f, animationSpec = tween(50))
-                shakeOffset.animateTo(15f, animationSpec = tween(50))
+    val onCheckedChange = onCheckedChange@{ it: Boolean ->
+        println(permissionState?.status)
+        println(alarmsEnabled())
+        when {
+            !it -> setNotificationsEnabled(false)
+            name == null -> scope.launch {
+                showError = true
+                repeat(4) {
+                    shakeOffset.animateTo(-15f, animationSpec = tween(50))
+                    shakeOffset.animateTo(15f, animationSpec = tween(50))
+                }
+                shakeOffset.animateTo(0f, animationSpec = tween(50))
             }
-            shakeOffset.animateTo(0f, animationSpec = tween(50))
-        } else if (it && permissionState != null && !permissionState.status.isGranted) {
-            permissionState.launchPermissionRequest()
-            waitingForPermission = true
-        } else {
-            setNotificationsEnabled(it)
+            permissionState != null && !permissionState.status.isGranted -> {
+                permissionState.launchPermissionRequest()
+            }
+            else -> afterCanPostNotifications()
         }
         Unit
     }
@@ -227,7 +253,9 @@ fun MyAnswer(
     OutlinedTextField(
         value = " ",
         onValueChange = {},
-        Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
         leadingIcon = {
             Row(
                 Modifier.fillMaxWidth(),
@@ -402,37 +430,38 @@ fun ColumnScope.AnswersList(answers: List<Pair<Person, AnswerState>>) = LazyColu
     Modifier.weight(1F)
 ) {
     items(answers) { (name, answer) ->
-        ListItem(
-            headlineContent = { Text(name) },
-            Modifier.animateItem(),
-            trailingContent = {
-                Row {
-                    AnswerState.entries.forEach { state ->
-                        Icon(
-                            imageVector = when (state) {
-                                AnswerState.Yes -> Icons.Default.Check
-                                AnswerState.No -> Icons.Default.Close
-                                AnswerState.Maybe -> Icons.AutoMirrored.Default.HelpOutline
-                            },
-                            contentDescription = when (state) {
-                                AnswerState.Yes -> "Přijde"
-                                AnswerState.No -> "Nepřijde"
-                                AnswerState.Maybe -> "Neví"
-                            },
-                            Modifier.padding(all = 16.dp),
-                            tint = when {
-                                answer != state -> MaterialTheme.colorScheme.onSurface
-                                else -> when (state) {
-                                    AnswerState.Yes -> Color.Green
-                                    AnswerState.No -> Color.Red
-                                    AnswerState.Maybe -> Color.Yellow
-                                }
-                            },
-                        )
-                    }
-                }
+        Row(
+            Modifier
+                .animateItem()
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(name, Modifier.weight(1F))
+            AnswerState.entries.forEach { state ->
+                Icon(
+                    imageVector = when (state) {
+                        AnswerState.Yes -> Icons.Default.Check
+                        AnswerState.No -> Icons.Default.Close
+                        AnswerState.Maybe -> Icons.AutoMirrored.Default.HelpOutline
+                    },
+                    contentDescription = when (state) {
+                        AnswerState.Yes -> "Přijde"
+                        AnswerState.No -> "Nepřijde"
+                        AnswerState.Maybe -> "Neví"
+                    },
+                    Modifier.padding(all = 8.dp),
+                    tint = when {
+                        answer != state -> MaterialTheme.colorScheme.onSurface
+                        else -> when (state) {
+                            AnswerState.Yes -> Color.Green
+                            AnswerState.No -> Color.Red
+                            AnswerState.Maybe -> Color.Yellow
+                        }
+                    },
+                )
             }
-        )
+        }
     }
     if (answers.isEmpty()) item {
         Text(

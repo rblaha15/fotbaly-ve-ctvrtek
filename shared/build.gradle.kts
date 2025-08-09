@@ -39,11 +39,15 @@ kotlin {
             implementation(npm("firebase", "^10.14.0"))
         }
     }
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
 }
 
 android {
     namespace = "cz.rblaha15.fotbaly_ve_ctvrtek.shared"
-    compileSdk = 34
+    compileSdk = 36
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

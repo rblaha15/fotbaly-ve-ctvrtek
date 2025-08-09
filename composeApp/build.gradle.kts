@@ -37,13 +37,14 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.browser)
             implementation(projects.shared)
+            implementation(libs.multiplatform.settings)
         }
     }
 }
 
 android {
     namespace = "cz.rblaha15.fotbaly_ve_ctvrtek"
-    compileSdk = 34
+    compileSdk = 36
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -52,9 +53,9 @@ android {
     defaultConfig {
         applicationId = "cz.rblaha15.fotbaly_ve_ctvrtek"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 6
-        versionName = "1.0.5"
+        versionName = "1.0.6"
     }
     packaging {
         resources {
